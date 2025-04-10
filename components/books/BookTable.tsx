@@ -1,10 +1,34 @@
-import { Book } from '@/app/dashboard/books/page';
+interface Book {
+  id: number;
+  title: string;
+  author: string;
+  published_date: string;
+  is_available?: boolean;
+}
 
 interface BookTableProps {
   books: Book[];
   onEdit: (book: Book) => void;
   onDelete: (id: number) => void;
 }
+
+const handleDelete = async (id: number) => {
+  if (confirm('Tem certeza que deseja excluir este livro?')) {
+    try {
+      const response = await fetch(`/api/books/${id}`, {
+        method: 'DELETE'
+      });
+      
+      if (!response.ok) throw new Error('Erro ao excluir');
+      onDeleteSuccess(); // Atualiza a lista após exclusão
+    } catch (error) {
+      console.error('Erro:', error);
+    }
+  }
+};
+
+// No retorno do componente:
+<button onClick={() => handleDelete(Book.id)}>Excluir</button>
 
 export default function BookTable({ books, onEdit, onDelete }: BookTableProps) {
   return (

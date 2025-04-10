@@ -1,18 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 
-interface StudentFormProps {
-  initialData?: {
-    id?: number;
-    name: string;
-    email: string;
-    birthdate: string;
-    nif: string;
-  };
-}
-
-export default function StudentForm({ initialData }: StudentFormProps) {
+export default function StudentForm({ studentId }: { studentId?: string }) {
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: '',
@@ -20,63 +11,68 @@ export default function StudentForm({ initialData }: StudentFormProps) {
     birthdate: '',
     nif: ''
   });
-  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
+  // Carrega dados do estudante se estiver em modo de edição
   useEffect(() => {
-    if (initialData) {
-      setFormData({
-        name: initialData.name,
-        email: initialData.email,
-        birthdate: initialData.birthdate.split('T')[0],
-        nif: initialData.nif
-      });
+    if (studentId) {
+      const fetchStudent = async () => {
+        try {
+          const response = await fetch(`http://localhost:8000/api/students/${studentId}`);
+          const data = await response.json();
+          setFormData({
+            name: data.name,
+            email: data.email,
+            birthdate: data.birthdate.split('T')[0],
+            nif: data.nif
+          });
+        } catch (error) {
+          toast.error('Falha ao carregar estudante');
+        }
+      };
+      fetchStudent();
     }
-  }, [initialData]);
+  }, [studentId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    setIsLoading(true);
+
     try {
-      // Converter a data para o formato esperado pelo backend (d/m/Y)
-      const formattedData = {
-        ...formData,
-        birthdate: formData.birthdate.split('-').reverse().join('/')
-      };
-  
-      const response = await fetch('http://localhost:8000/api/students', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formattedData),
+      const url = studentId 
+        ? `http://localhost:8000/api/students/${studentId}`
+        : 'http://localhost:8000/api/students';
+      
+      const method = studentId ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          birthdate: formData.birthdate.split('-').reverse().join('/') // Converte para d/m/Y
+        })
       });
-  
-      const data = await response.json();
-  
-      if (!response.ok) {
-        // Se for erro de validação (422), mostra os erros específicos
-        if (response.status === 422 && data.errors) {
-          const errorMessages = Object.values(data.errors).flat().join('\n');
-          throw new Error(errorMessages);
-        }
-        throw new Error(data.message || 'Erro ao cadastrar estudante');
-      }
-  
+
+      if (!response.ok) throw new Error('Erro ao salvar');
+
+      toast.success(`Estudante ${studentId ? 'atualizado' : 'criado'} com sucesso!`);
       router.push('/admin/dashboard');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Erro desconhecido');
+    } finally {
+      setIsLoading(false);
     }
   };
-  
+
 
   return (
-    <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md text-black">
-      <h2 className="text-xl font-semibold mb-4">
-        {initialData?.id ? 'Editar Estudante' : 'Adicionar Estudante'}
-      </h2>
-      {error && <div className="text-red-500 mb-4">{error}</div>}
+    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md text-black">
+      <h1 className="text-2xl font-bold mb-6">
+        {studentId ? 'Editar Estudante' : 'Adicionar Estudante'}
+      </h1>
       
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="mb-4">
           <label className="block text-gray-700 mb-2">Nome Completo</label>
           <input
@@ -121,21 +117,25 @@ export default function StudentForm({ initialData }: StudentFormProps) {
           />
         </div>
 
-        <div className="flex justify-end space-x-2">
+        <div className="flex justify-end space-x-3 pt-4">
           <button
             type="button"
             onClick={() => router.push('/admin/dashboard')}
-            className="px-4 py-2 border rounded"
+            className="px-4 py-2 border rounded-md"
+            disabled={isLoading}
           >
             Cancelar
           </button>
           <button
             type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            className={`px-4 py-2 bg-blue-600 text-white rounded-md ${
+              isLoading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            disabled={isLoading}
           >
-            Salvar
+            {isLoading ? 'Salvando...' : 'Salvar'}
           </button>
-        </div>
+          </div>
       </form>
     </div>
   );

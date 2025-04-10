@@ -8,11 +8,12 @@ import { toast } from 'react-hot-toast';
 import BookTable from '@/components/books/BookTable';
 import BookForm from '@/components/books/BookForm';
 
-interface Book {
+export interface Book {
   id: number;
   title: string;
   author: string;
   published_date: string;
+  is_available?: boolean;
 }
 
 export default function BooksPage() {

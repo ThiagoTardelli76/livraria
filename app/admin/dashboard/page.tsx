@@ -64,6 +64,8 @@ export default function AdminDashboard() {
     try {
       const response = await fetch(`http://localhost:8000/api/${type}s/${id}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`}
       });
 
       if (!response.ok) throw new Error(`Erro ao excluir ${type}`);

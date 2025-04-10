@@ -1,113 +1,155 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 
-interface BookFormProps {
-  initialData?: {
-    id?: number;
-    title: string;
-    author: string;
-    published_date: string;
-  };
-}
-
-export default function BookForm({ initialData }: BookFormProps) {
+export default function BookForm({ bookId }: { bookId?: string }) {
   const router = useRouter();
   const [formData, setFormData] = useState({
     title: '',
     author: '',
     published_date: ''
   });
-  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
+  // Carrega os dados do livro se estiver em modo de edição
   useEffect(() => {
-    if (initialData) {
-      setFormData({
-        title: initialData.title,
-        author: initialData.author,
-        published_date: initialData.published_date.split('T')[0]
-      });
+    if (bookId) {
+      const fetchBookData = async () => {
+        try {
+          setIsLoading(true);
+          const response = await fetch(`http://localhost:8000/api/books/${bookId}`);
+          
+          if (!response.ok) {
+            throw new Error('Livro não encontrado');
+          }
+
+          const data = await response.json();
+          setFormData({
+            title: data.title,
+            author: data.author,
+            published_date: data.published_date.split('T')[0] // Formata a data
+          });
+        } catch (error) {
+          toast.error(error instanceof Error ? error.message : 'Erro ao carregar');
+          router.push('/admin/books');
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchBookData();
     }
-  }, [initialData]);
+  }, [bookId, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    setIsLoading(true);
+  
     try {
-      // Envia no formato YYYY-MM-DD que o input date já fornece
-      const response = await fetch('http://localhost:8000/api/books', {
-        method: 'POST',
-        headers: {
+      const url = bookId 
+        ? `http://localhost:8000/api/books/${bookId}`
+        : 'http://localhost:8000/api/books';
+      
+      const method = bookId ? 'PUT' : 'POST';
+  
+      const payload = {
+        title: formData.title,
+        author: formData.author,
+        published_date: new Date(formData.published_date).toISOString()
+      };
+  
+      const response = await fetch(url, {
+        method,
+        headers: { 
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         },
-        body: JSON.stringify({
-          title: formData.title,
-          author: formData.author,
-          published_date: formData.published_date // Já está no formato correto
-        }),
+        body: JSON.stringify(payload)
       });
   
-      if (!response.ok) throw new Error('Erro ao salvar livro');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erro ao salvar livro');
+      }
+  
+      toast.success(`Livro ${bookId ? 'atualizado' : 'adicionado'} com sucesso!`);
+      
+    
       router.push('/admin/dashboard');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      router.refresh();
+  
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Erro desconhecido');
+    } finally {
+      setIsLoading(false);
     }
   };
 
+
   return (
-    <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md text-black">
-      <h2 className="text-xl font-semibold mb-4">
-        {initialData?.id ? 'Editar Livro' : 'Adicionar Livro'}
-      </h2>
-      {error && <div className="text-red-500 mb-4">{error}</div>}
+    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md text-black">
+      <h1 className="text-2xl font-bold mb-6">
+        {bookId ? 'Editar Livro' : 'Adicionar Livro'}
+      </h1>
       
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Título</label>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Título *</label>
           <input
             type="text"
-            className="w-full px-3 py-2 border rounded"
+            name="title"
             value={formData.title}
             onChange={(e) => setFormData({...formData, title: e.target.value})}
+            className="mt-1 block w-full p-2 border rounded-md"
             required
+            disabled={isLoading}
           />
         </div>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Autor</label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Autor *</label>
           <input
             type="text"
-            className="w-full px-3 py-2 border rounded"
+            name="author"
             value={formData.author}
             onChange={(e) => setFormData({...formData, author: e.target.value})}
+            className="mt-1 block w-full p-2 border rounded-md"
             required
+            disabled={isLoading}
           />
         </div>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Data de Publicação</label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Data Publicação *</label>
           <input
             type="date"
-            className="w-full px-3 py-2 border rounded"
+            name="published_date"
             value={formData.published_date}
             onChange={(e) => setFormData({...formData, published_date: e.target.value})}
+            className="mt-1 block w-full p-2 border rounded-md"
             required
+            disabled={isLoading}
           />
         </div>
 
-        <div className="flex justify-end space-x-2">
+        <div className="flex justify-end space-x-3 pt-4">
           <button
             type="button"
             onClick={() => router.push('/admin/dashboard')}
-            className="px-4 py-2 border rounded"
+            className="px-4 py-2 border rounded-md"
+            disabled={isLoading}
           >
             Cancelar
           </button>
           <button
             type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            className={`px-4 py-2 bg-blue-600 text-white rounded-md ${
+              isLoading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            disabled={isLoading}
           >
-            Salvar
+            {isLoading ? 'Salvando...' : 'Salvar'}
           </button>
         </div>
       </form>

@@ -1,51 +1,61 @@
 'use client';
+import { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 
-export default function RentButton({ bookId, available }: { bookId: number, available: boolean }) {
-  const { user } = useAuth();
+export default function RentButton({ bookId, onRentSuccess }: { 
+    bookId: number,
+    onRentSuccess?: () => void 
+}) {
+    const { user } = useAuth();
+    const [isLoading, setIsLoading] = useState(false);
 
-  const handleRent = async () => {
-    if (!user) {
-      alert('Faça login para alugar livros');
-      return;
-    }
+    const handleRent = async () => {
+        if (!user) {
+            toast.error('Faça login para alugar livros');
+            return;
+        }
 
-    try {
-      const response = await fetch('http://localhost:8000/api/loans', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-        },
-        body: JSON.stringify({
-          book_id: bookId,
-          student_id: user.id
-        })
-      });
+        setIsLoading(true);
+        try {
+            const response = await fetch('http://localhost:8000/api/loans', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                },
+                body: JSON.stringify({
+                    book_id: bookId,
+                    student_id: user.id
+                })
+            });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erro ao alugar livro');
-      }
+            const data = await response.json();
 
-      alert('Livro alugado com sucesso!');
-      window.location.reload(); 
-    } catch (error) {
-      alert(error instanceof Error ? error.message : 'Erro desconhecido');
-    }
-  };
+            if (!response.ok) {
+                throw new Error(data.error || 'Erro ao alugar livro');
+            }
 
-  return (
-    <button
-      onClick={handleRent}
-      disabled={!available}
-      className={`px-4 py-2 rounded-md ${
-        available
-          ? 'bg-green-500 text-white hover:bg-green-600'
-          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-      }`}
-    >
-      {available ? 'Alugar Livro' : 'Indisponível'}
-    </button>
-  );
+            toast.success('Livro alugado com sucesso!');
+            onRentSuccess?.();
+            
+        } catch (error) {
+            console.error('Erro detalhado:', error);
+            toast.error(error instanceof Error ? error.message : 'Erro desconhecido');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <button
+            onClick={handleRent}
+            disabled={isLoading}
+            className={`px-4 py-2 rounded ${
+                isLoading ? 'bg-gray-400' : 'bg-green-500 hover:bg-green-600'
+            } text-white`}
+        >
+            {isLoading ? 'Processando...' : 'Alugar'}
+        </button>
+    );
 }
