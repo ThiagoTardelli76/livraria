@@ -1,14 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
-
-interface Book {
-  id: number;
-  title: string;
-  author: string;
-  is_available: boolean;
-}
 
 export default function HomePage() {
   return (

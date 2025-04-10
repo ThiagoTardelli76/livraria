@@ -13,7 +13,7 @@ export default function AdminLoginPage() {
     e.preventDefault();
     try {
       await login('admin', { username, password });
-    } catch (err) {
+    } catch (error) {
       setError('Credenciais inválidas');
     }
   };

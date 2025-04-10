@@ -12,6 +12,7 @@ interface Student {
 }
 
 interface Book {
+  loans: any;
   id: number;
   title: string;
   author: string;
@@ -206,7 +207,7 @@ export default function AdminDashboard() {
                     {new Date(book.published_date).toLocaleDateString('pt-BR')}
                   </td>
                   <td className="py-4 px-6">
-                    {book.loans?.some(loan => !loan.returned) ? (
+                    {book.loans?.some((loan: { returned: any; }) => !loan.returned) ? (
                       <span className="text-red-500">Alugado</span>
                     ) : (
                       <span className="text-green-500">Disponível</span>

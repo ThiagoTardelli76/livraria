@@ -27,7 +27,6 @@ const handleDelete = async (id: number) => {
   }
 };
 
-// No retorno do componente:
 <button onClick={() => handleDelete(Book.id)}>Excluir</button>
 
 export default function BookTable({ books, onEdit, onDelete }: BookTableProps) {
@@ -82,4 +81,8 @@ export default function BookTable({ books, onEdit, onDelete }: BookTableProps) {
       </table>
     </div>
   );
+}
+
+function onDeleteSuccess() {
+  throw new Error("Function not implemented.");
 }

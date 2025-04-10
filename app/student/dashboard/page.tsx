@@ -1,11 +1,11 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { toast } from 'react-hot-toast';
 import ReturnButton from '@/components/ReturnButton';
 import RentButton from '@/components/RentButton';
 
 interface Book {
+    published_date: string | number | Date;
     id: number;
     title: string;
     author: string;
@@ -119,7 +119,7 @@ export default function StudentDashboard() {
                 <h3 className="text-lg font-semibold mb-2">{book.title}</h3>
                 <p className="text-gray-600 mb-2">Autor: {book.author}</p>
                 <p className="text-gray-500 text-sm mb-4">
-                  Publicação: {new Date(book.published_date).toLocaleDateString('pt-BR')}
+                  Publicação: {new Date(book.published_date).toLocaleDateString('pt-PT')}
                 </p>
                 <div className="flex justify-end">
                   <RentButton 

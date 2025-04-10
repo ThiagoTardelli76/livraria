@@ -12,7 +12,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (type: 'admin' | 'student', credentials: any) => Promise<void>;
+  login: (type: 'admin' | 'student', credentials: unknown) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
   loading: boolean;
@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 };
 
-  const login = async (type: 'admin' | 'student', credentials: any) => {
+  const login = async (type: 'admin' | 'student', credentials: unknown) => {
     try {
       setLoading(true);
       const endpoint = type === 'admin' ? '/admin/login' : '/student/login';
