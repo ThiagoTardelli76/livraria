@@ -1,7 +1,16 @@
 import BookForm from '@/components/books/BookForm';
 import Link from 'next/link';
 
-export default function EditBookPage({ params }: { params: { id: string } }) {
+interface SegmentParams {
+  id: string;
+}
+
+interface PageProps {
+  params: SegmentParams;
+  searchParams?: any;
+}
+
+export default function EditBookPage({ params }: PageProps) {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
