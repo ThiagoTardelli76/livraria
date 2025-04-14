@@ -2,6 +2,8 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
+export type UserRole = "admin" | "student";
+
 interface User {
   id: number;
   name: string;
@@ -12,14 +14,24 @@ interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (type: 'admin' | 'student', credentials: unknown) => Promise<void>;
+  login: (type: 'admin' | 'student', credentials: any) => Promise<void>;
   logout: () => void;
+  register?: (credentials: any) => Promise<void>;
   isAuthenticated: boolean;
   loading: boolean;
   checkAuth: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  token: null,
+  login: async () => {},
+  logout: () => {},
+  register: async () => {},
+  isAuthenticated: false,
+  loading: true,
+  checkAuth: async () => {},
+});
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);

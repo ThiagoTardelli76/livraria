@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import RentButton from '@/components/RentButton';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 interface Book {
   id: number;

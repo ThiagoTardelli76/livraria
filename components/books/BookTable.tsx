@@ -1,10 +1,4 @@
-interface Book {
-  id: number;
-  title: string;
-  author: string;
-  published_date: string;
-  is_available?: boolean;
-}
+import { type Book } from '@/app/dashboard/books/page';
 
 interface BookTableProps {
   books: Book[];
@@ -12,24 +6,22 @@ interface BookTableProps {
   onDelete: (id: number) => void;
 }
 
-const handleDelete = async (id: number) => {
-  if (confirm('Tem certeza que deseja excluir este livro?')) {
-    try {
-      const response = await fetch(`/api/books/${id}`, {
-        method: 'DELETE'
-      });
-      
-      if (!response.ok) throw new Error('Erro ao excluir');
-      onDeleteSuccess(); // Atualiza a lista após exclusão
-    } catch (error) {
-      console.error('Erro:', error);
-    }
-  }
-};
-
-<button onClick={() => handleDelete(Book.id)}>Excluir</button>
-
 export default function BookTable({ books, onEdit, onDelete }: BookTableProps) {
+  const handleDelete = async (id: number) => {
+    if (confirm('Tem certeza que deseja excluir este livro?')) {
+      try {
+        const response = await fetch(`/api/books/${id}`, {
+          method: 'DELETE'
+        });
+        
+        if (!response.ok) throw new Error('Erro ao excluir');
+        onDelete(id); // Chama a função onDelete passada via props para atualizar o estado
+      } catch (error) {
+        console.error('Erro:', error);
+      }
+    }
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
@@ -69,7 +61,7 @@ export default function BookTable({ books, onEdit, onDelete }: BookTableProps) {
                   Editar
                 </button>
                 <button
-                  onClick={() => onDelete(book.id)}
+                  onClick={() => handleDelete(book.id)}  
                   className="text-red-600 hover:text-red-900"
                 >
                   Excluir
@@ -81,8 +73,4 @@ export default function BookTable({ books, onEdit, onDelete }: BookTableProps) {
       </table>
     </div>
   );
-}
-
-function onDeleteSuccess() {
-  throw new Error("Function not implemented.");
 }

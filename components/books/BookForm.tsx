@@ -2,8 +2,22 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
+import { Book } from '@/app/dashboard/books/page';
 
-export default function BookForm({ bookId }: { bookId?: string }) {
+
+
+interface BookFormProps {
+  bookId?: string;
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit?: (data: any) => void;
+  initialData: Book | null;
+  mode?: 'create' | 'edit';
+}
+
+
+export default function BookForm({ bookId, mode = 'create' }: BookFormProps) {
+  
   const router = useRouter();
   const [formData, setFormData] = useState({
     title: '',
@@ -11,8 +25,7 @@ export default function BookForm({ bookId }: { bookId?: string }) {
     published_date: ''
   });
   const [isLoading, setIsLoading] = useState(false);
-
-  // Carrega os dados do livro se estiver em modo de edição
+  
   useEffect(() => {
     if (bookId) {
       const fetchBookData = async () => {
@@ -90,7 +103,7 @@ export default function BookForm({ bookId }: { bookId?: string }) {
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md text-black">
       <h1 className="text-2xl font-bold mb-6">
-        {bookId ? 'Editar Livro' : 'Adicionar Livro'}
+      {mode === 'edit' ? 'Editar Livro' : 'Adicionar Livro'}
       </h1>
       
       <form onSubmit={handleSubmit} className="space-y-4">

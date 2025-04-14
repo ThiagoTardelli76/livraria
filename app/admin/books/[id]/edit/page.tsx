@@ -1,16 +1,19 @@
 import BookForm from '@/components/books/BookForm';
 import Link from 'next/link';
+import { Metadata } from 'next';
 
-interface SegmentParams {
-  id: string;
+
+interface PageParams {
+  params: {
+    id: string;
+  };
 }
 
-interface PageProps {
-  params: SegmentParams;
-  searchParams?: any;
-}
+export const metadata: Metadata = {
+  title: 'Editar Livro',
+};
 
-export default function EditBookPage({ params }: PageProps) {
+export default function EditBookPage({ params }: PageParams) {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
@@ -23,7 +26,11 @@ export default function EditBookPage({ params }: PageProps) {
         </Link>
       </div>
       
-      <BookForm bookId={params.id} />
+      <BookForm bookId={params.id} mode="edit" isOpen={false} onClose={function (): void {
+        throw new Error('Function not implemented.');
+      } } onSubmit={function (data: any): Promise<void> {
+        throw new Error('Function not implemented.');
+      } } initialData={null} />
     </div>
   );
 }
