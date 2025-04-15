@@ -1,6 +1,8 @@
 const nextConfig = {
   experimental: {
     typedRoutes: false,
+    output: 'export',
+    distDir: 'out',
   },
 };
 

@@ -4,12 +4,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
+    "predeploy": "npm run build: export",
+    "deploy":"npx gh-pages -d out",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    
+    "build:export": "next build"
   },
   "dependencies": {
     "@mui/icons-material": "^7.0.1",
@@ -22,6 +24,7 @@
     "mysql2": "^3.14.0",
     "next": "^14.1.0",
     "next-auth": "^4.24.11",
+    "pg": "^8.14.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.55.0",
@@ -30,6 +33,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/pg": "^8.11.12",
     "@types/react-dom": "^18.3.6",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
