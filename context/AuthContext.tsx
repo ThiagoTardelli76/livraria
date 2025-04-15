@@ -77,7 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       const endpoint = type === 'admin' ? '/admin/login' : '/student/login';
       
-      const response = await fetch(`https://library.com/api/${type}/login`, {
+      const response = await fetch(`http://localhost:8000/api${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
