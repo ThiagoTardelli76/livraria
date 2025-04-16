@@ -5,13 +5,12 @@
   "private": true,
   "scripts": {
     "predeploy": "npm run build",
-    "deploy": "npx gh-pages -d out",
+    "deploy": "gh-pages -d build",
     "dev": "next dev",
     "export": "next export",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "build:export": "next build && next export"
+    "lint": "next lint"
   },
   "dependencies": {
     "@mui/icons-material": "^7.0.1",

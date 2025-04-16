@@ -52,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             return;
         }
 
-        const response = await fetch('http://localhost:8000/api/check-auth', {
+        const response = await fetch('http://library-api-production-3647.up.railway.app/api/check-auth', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -77,7 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       const endpoint = type === 'admin' ? '/admin/login' : '/student/login';
       
-      const response = await fetch(`http://localhost:8000/api${endpoint}`, {
+      const response = await fetch(`http://library-api-production-3647.up.railway.app/api${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
