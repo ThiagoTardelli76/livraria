@@ -4,14 +4,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predeploy": "npm run build: export",
-    "deploy":"npx gh-pages -d out",
+    "predeploy": "npm run build",
+    "deploy": "npx gh-pages -d out",
     "dev": "next dev",
+    "export": "next export",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    
-    "build:export": "next build"
+    "build:export": "next build && next export"
   },
   "dependencies": {
     "@mui/icons-material": "^7.0.1",

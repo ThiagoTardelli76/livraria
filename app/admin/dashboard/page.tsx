@@ -38,8 +38,8 @@ export default function AdminDashboard() {
       try {
         setLoading(true);
         const [studentsRes, booksRes] = await Promise.all([
-          fetch('http://localhost:8000/api/students'),
-          fetch('http://localhost:8000/api/books')
+          fetch('http://library-api-production-3647.up.railway.app/api/students'),
+          fetch('http://library-api-production-3647.up.railway.app/api/books')
         ]);
 
         if (!studentsRes.ok || !booksRes.ok) throw new Error('Erro ao carregar dados');
@@ -63,7 +63,7 @@ export default function AdminDashboard() {
     if (!confirm(`Tem certeza que deseja excluir este ${type === 'student' ? 'estudante' : 'livro'}?`)) return;
 
     try {
-      const response = await fetch(`http://localhost:8000/api/${type}s/${id}`, {
+      const response = await fetch(`http://library-api-production-3647.up.railway.app/api/${type}s/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('authToken')}`}

@@ -1,9 +1,6 @@
 const nextConfig = {
-  experimental: {
-    typedRoutes: false,
-    output: 'export',
-    distDir: 'out',
-  },
+  output: 'export', 
+  basePath: '/thiagotardelli76.github.io',
 };
 
 module.exports = nextConfig;

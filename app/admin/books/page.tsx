@@ -20,7 +20,7 @@ export default function BooksPage() {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/books');
+        const response = await fetch('http://library-api-production-3647.up.railway.app/api/books');
         if (!response.ok) throw new Error('Erro ao carregar livros');
         const data = await response.json();
         setBooks(data);

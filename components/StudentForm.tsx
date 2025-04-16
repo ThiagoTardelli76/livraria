@@ -18,7 +18,7 @@ export default function StudentForm({ studentId }: { studentId?: string }) {
     if (studentId) {
       const fetchStudent = async () => {
         try {
-          const response = await fetch(`http://localhost:8000/api/students/${studentId}`);
+          const response = await fetch(`http://library-api-production-3647.up.railway.app/api/students/${studentId}`);
           const data = await response.json();
           setFormData({
             name: data.name,
@@ -40,8 +40,8 @@ export default function StudentForm({ studentId }: { studentId?: string }) {
 
     try {
       const url = studentId 
-        ? `http://localhost:8000/api/students/${studentId}`
-        : 'http://localhost:8000/api/students';
+        ? `http://library-api-production-3647.up.railway.app/api/students/${studentId}`
+        : 'http://library-api-production-3647.up.railway.app/api/students';
       
       const method = studentId ? 'PUT' : 'POST';
 
